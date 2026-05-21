@@ -51,7 +51,7 @@
         }
         .input-box-wrapper input, .input-box-wrapper select {
             width: 100%;
-            padding: 12px 45px 12px 14px;
+            padding: 12px 55px 12px 14px;
             border: 1.5px solid #cbd5e1;
             border-radius: 8px;
             font-size: 16px;
@@ -228,37 +228,38 @@
 
 <div class="acrylic-calculator-container">
     <h3>아크릴 재단 자동 계산기</h3>
-    <div class="sub-title">사이즈를 입력하시면 쇼핑몰 주문 수량이 계산됩니다.</div>
+    <div class="sub-title">색상과 사이즈를 입력하시면 쇼핑몰 주문 수량이 계산됩니다.</div>
     
     <div class="calc-row">
-        <label>아크릴 두께 선택</label>
+        <label>아크릴 색상 선택</label>
         <div class="input-box-wrapper">
-            <select id="acrylic-t" onchange="runCalculation()">
-                <option value="2T" selected>2T (2mm)</option>
-                <option value="3T">3T (3mm)</option>
-                <option value="5T">5T (5mm)</option>
-                <option value="8T">8T (8mm)</option>
-                <option value="10T">10T (10mm)</option>
-                <option value="15T">15T (15mm)</option>
-                <option value="20T">20T (20mm)</option>
+            <select id="acrylic-color" onchange="handleColorChange();">
             </select>
         </div>
     </div>
 
     <div class="calc-row">
-        <label>가로 사이즈</label>
+        <label>아크릴 두께 선택</label>
         <div class="input-box-wrapper">
-            <input type="number" id="size-w" placeholder="최대 90" min="0" max="90" oninput="handleInputRestriction(this); runCalculation();">
-            <span class="unit-text">cm</span>
+            <select id="acrylic-t" onchange="runCalculation();">
+            </select>
+        </div>
+    </div>
+
+    <div class="calc-row">
+        <label>가로 사이즈 (50 ~ 900mm)</label>
+        <div class="input-box-wrapper">
+            <input type="number" id="size-w" placeholder="50 ~ 900" min="50" max="900" oninput="handleInputRestriction(this); runCalculation();">
+            <span class="unit-text">mm</span>
         </div>
         <div class="guide-text" id="guide-w">→ 가로를 입력해주세요.</div>
     </div>
 
     <div class="calc-row">
-        <label>세로 사이즈</label>
+        <label>세로 사이즈 (50 ~ 900mm)</label>
         <div class="input-box-wrapper">
-            <input type="number" id="size-h" placeholder="최대 90" min="0" max="90" oninput="handleInputRestriction(this); runCalculation();">
-            <span class="unit-text">cm</span>
+            <input type="number" id="size-h" placeholder="50 ~ 900" min="50" max="900" oninput="handleInputRestriction(this); runCalculation();">
+            <span class="unit-text">mm</span>
         </div>
         <div class="guide-text" id="guide-h">→ 세로를 입력해주세요.</div>
     </div>
@@ -266,7 +267,7 @@
     <div class="calc-row">
         <label>주문 수량 (판수)</label>
         <div class="input-box-wrapper">
-            <input type="number" id="item-qty" placeholder="수량 입력" min="0" oninput="runCalculation()">
+            <input type="number" id="item-qty" placeholder="수량 입력" min="1" oninput="runCalculation();">
             <span class="unit-text">장</span>
         </div>
     </div>
@@ -291,8 +292,9 @@
     <div class="transfer-section">
         <h4>📦 전송내용 확인</h4>
         <div class="transfer-info-row">
-            <div>• <strong>아크릴 두께 :</strong> <span id="confirm-thickness">2T</span></div>
-            <div>• <strong>가로 x 세로 사이즈 :</strong> <span id="confirm-size">0 x 0 cm</span></div>
+            <div>• <strong>아크릴 색상 :</strong> <span id="confirm-color">-</span></div>
+            <div>• <strong>아크릴 두께 :</strong> <span id="confirm-thickness">-</span></div>
+            <div>• <strong>가로 x 세로 사이즈 :</strong> <span id="confirm-size">0 x 0 mm</span></div>
             <div>• <strong>주문 수량 :</strong> <span id="confirm-quantity">0</span> 장</div>
         </div>
         
@@ -318,33 +320,102 @@
         <ol>
             <li>위의 녹색 박스에 표시된 <strong><span id="guide-qty-text">0</span></strong> 개를 복사합니다.</li>
             <li>쇼핑몰 결제창의 <strong>[수량]</strong> 칸에 그대로 입력합니다.</li>
-            <li>배송 요청사항이나 텍스트 옵션 칸에 <br><strong style="color:#059669;">[ 두께 / 가로cm x 세로cm / 총 장수 ]</strong>를 적고 장바구니에 담아주세요!</li>
+            <li>배송 요청사항이나 텍스트 옵션 칸에 <br><strong style="color:#059669;">[ 색상 / 두께 / 가로mm x 세로mm / 총 장수 ]</strong>를 적고 장바구니에 담아주세요!</li>
         </ol>
     </div>
 </div>
 
 <script>
-const priceTable = {
-    "2T": {5:{5:100,10:200,15:300,20:400,25:500,30:600,35:700,40:800,45:900,50:1000,55:1100,60:1200,65:1300,70:1400,75:1500,80:1600,85:1700,90:1800},10:{5:200,10:400,15:600,20:800,25:1000,30:1200,35:1400,40:1600,45:1800,50:2000,55:2200,60:2400,65:2600,70:2800,75:3000,80:3200,85:3400,90:3600},15:{5:300,10:600,15:900,20:1200,25:1500,30:1800,35:2100,40:2400,45:2700,50:3000,55:3300,60:3600,65:3900,70:4200,75:4500,80:4800,85:5100,90:5400},20:{5:400,10:800,15:1200,20:1600,25:2000,30:2400,35:2800,40:3200,45:3600,50:4000,55:4400,60:4800,65:5200,70:5600,75:6000,80:6400,85:6800,90:7200},25:{5:500,10:1000,15:1500,20:2000,25:2500,30:3000,35:3500,40:4000,45:4500,50:5000,55:5500,60:6000,65:6500,70:7000,75:7500,80:8000,85:8500,90:9000},30:{5:600,10:1200,15:1800,20:2400,25:3000,30:3600,35:4200,40:4800,45:5400,50:6000,55:6600,60:7200,65:7800,70:8400,75:9000,80:9600,85:10200,90:10800},35:{5:700,10:1400,15:2100,20:2800,25:3500,30:4200,35:4900,40:5600,45:6300,50:7000,55:7700,60:8400,65:9100,70:9800,75:10500,80:11200,85:11900,90:12600},40:{5:800,10:1600,15:2400,20:3200,25:4000,30:4800,35:5600,40:6400,45:7200,50:8000,55:8800,60:9600,65:10400,70:11200,75:12000,80:12800,85:13600,90:14400},45:{5:900,10:1800,15:2700,20:3600,25:4500,30:5400,35:6300,40:7200,45:8100,50:9000,55:9900,60:10800,65:11700,70:12600,75:13500,80:14400,85:15300,90:16200},50:{5:1000,10:2000,15:3000,20:4000,25:2000,30:6000,35:7000,40:8000,45:9000,50:10000,55:11000,60:12000,65:13000,70:14000,75:15000,80:16000,85:17000,90:18000},55:{5:1100,10:2200,15:3300,20:4400,25:5500,30:6600,35:7700,40:8800,45:9900,50:11000,55:12100,60:13200,65:14300,70:15400,75:16500,80:17600,85:18700,90:19800},60:{5:1200,10:2400,15:3600,20:4800,25:6000,30:7200,35:8400,40:9600,45:10800,50:12000,55:13200,60:14400,65:15600,70:16800,75:18000,80:19200,85:20400,90:21600},65:{5:1300,10:2600,15:3900,20:5200,25:6500,30:7800,35:9100,40:10400,45:11700,50:13000,55:14300,60:15600,65:16900,70:18200,75:19500,80:20800,85:22100,90:23400},70:{5:1400,10:2800,15:4200,20:5600,25:7000,30:8400,35:9800,40:11200,45:12600,50:14000,55:15400,60:16800,65:18200,70:19600,75:21000,80:22400,85:23800,90:25200},75:{5:1500,10:3000,15:4500,20:6000,25:7500,30:9000,35:10500,40:12000,45:13500,50:15000,55:16500,60:18000,65:19500,70:21000,75:22500,80:24000,85:25500,90:27000},80:{5:1600,10:3200,15:4800,20:6400,25:8000,30:9600,35:11200,40:12800,45:14400,50:16000,55:17600,60:19200,65:20800,70:22400,75:24000,80:25600,85:27200,90:28800},85:{5:1700,10:3400,15:5100,20:6800,25:8500,30:10200,35:11900,40:13600,45:15300,50:17000,55:18700,60:20400,65:22100,70:23800,75:25500,80:27200,85:28900,90:30600},90:{5:1800,10:3600,15:5400,20:7200,25:9000,30:10800,35:12600,40:14400,45:16200,50:18000,55:19800,60:21600,65:23400,70:25200,75:27000,80:28800,85:30600,90:32400}},
-    "3T": {5:{5:200,10:300,15:500,20:600,25:800,30:900,35:1100,40:1200,45:1400,50:1500,55:1700,60:1800,65:2000,70:2100,75:2300,80:2400,85:2600,90:2700},10:{5:300,10:600,15:900,20:1200,25:1500,30:1800,35:2100,40:2400,45:2700,50:3000,55:3300,60:3600,65:3900,70:4200,75:4500,80:4800,85:5100,90:5400},15:{5:500,10:900,15:1400,20:1800,25:2300,30:2700,35:3200,40:3600,45:4100,50:4500,55:5000,60:5400,65:5900,70:6300,75:6800,80:7200,85:7700,90:8100},20:{5:600,10:1200,15:1800,20:2400,25:3000,30:3600,35:4200,40:4800,45:5400,50:6000,55:6600,60:7200,65:7800,70:8400,75:9000,80:9600,85:10200,90:10800},25:{5:800,10:1500,15:2300,20:3000,25:3800,30:4500,35:5300,40:6000,45:6800,50:7500,55:8300,60:9000,65:9800,70:10500,75:11300,80:12000,85:12800,90:13500},30:{5:900,10:1800,15:2700,20:3600,25:4500,30:5400,35:6300,40:7200,45:8100,50:9000,55:9900,60:10800,65:11700,70:12600,75:13500,80:14400,85:15300,90:16200},35:{5:1100,10:2100,15:3200,20:4200,25:5300,30:6300,35:7400,40:8400,45:9500,50:10500,55:11600,60:12600,65:13700,70:14700,75:15800,80:16800,85:17900,90:18900},40:{5:1200,10:2400,15:3600,20:4800,25:6000,30:7200,35:8400,40:9600,45:10800,50:12000,55:13200,60:14400,65:15600,70:16800,75:18000,80:19200,85:20400,90:21600},45:{5:1400,10:2700,15:4100,20:5400,25:6800,30:8100,35:9500,40:10800,45:12200,50:13500,55:14900,60:16200,65:17600,70:18900,75:20300,80:21600,85:23000,90:24300},50:{5:1500,10:3000,15:4500,20:6000,25:7500,30:9000,35:10500,40:12000,45:13500,50:15000,55:16500,60:18000,65:19500,70:21000,75:22500,80:24000,85:25500,90:27000},55:{5:1700,10:3300,15:5000,20:6600,25:8300,30:9900,35:11600,40:13200,45:14900,50:16500,55:18200,60:19800,65:21500,70:23100,75:24800,80:26400,85:28100,90:29700},60:{5:1800,10:3600,15:5400,20:7200,25:9000,30:10800,35:12600,40:14400,45:16200,50:18000,55:19800,60:21600,65:23400,70:25200,75:27000,80:28800,85:30600,90:32400},65:{5:2000,10:3900,15:5900,20:7800,25:9800,30:11700,35:13700,40:15600,45:17600,50:19500,55:21500,60:23400,65:25400,70:27300,75:29300,80:31200,85:33200,90:35100},70:{5:2100,10:4200,15:6300,20:8400,25:10500,30:12600,35:14700,40:16800,45:18900,50:21000,55:23100,60:25200,65:27300,70:29400,75:31500,80:33600,85:35700,90:37800},75:{5:2300,10:4500,15:6800,20:9000,25:11300,30:13500,35:15800,40:18000,45:20300,50:22500,55:24800,60:27000,65:29300,70:31500,75:33800,80:36000,85:38300,90:40500},80:{5:2400,10:4800,15:7200,20:9600,25:12000,30:14400,35:16800,40:19200,45:21600,50:24000,55:26400,60:28800,65:31200,70:33600,75:36000,80:38400,85:40800,90:43200},85:{5:2600,10:5100,15:7700,20:10200,25:12800,30:15300,35:17900,40:20400,45:23000,50:25500,55:28100,60:30600,65:33200,70:35700,75:38300,80:40800,85:43400,90:45900},90:{5:2700,10:5400,15:8100,20:10800,25:13500,30:16200,35:18900,40:21600,45:24300,50:27000,55:29700,60:32400,65:35100,70:37800,75:40500,80:43200,85:45900,90:48600}},
-    "5T": {5:{5:300,10:500,15:800,20:1000,25:1300,30:1500,35:1800,40:2000,45:2300,50:2500,55:2800,60:3000,65:3300,70:3500,75:3800,80:4000,85:4300,90:4500},10:{5:500,10:1000,15:1500,20:2000,25:2500,30:3000,35:3500,40:4000,45:4500,50:5000,55:5500,60:6000,65:6500,70:7000,75:7500,80:8000,85:8500,90:9000},15:{5:800,10:1500,15:2300,20:3000,25:3800,30:4500,35:5300,40:6000,45:6800,50:7500,55:8300,60:9000,65:9800,70:10500,75:11300,80:12000,85:12800,90:13500},20:{5:1000,10:2000,15:3000,20:4000,25:5000,30:6000,35:7000,40:8000,45:9000,50:10000,55:11000,60:12000,65:13000,70:14000,75:15000,80:16000,85:17000,90:18000},25:{5:1300,10:2500,15:3800,20:5000,25:6300,30:7500,35:8800,40:10000,45:11300,50:12500,55:13800,60:15000,65:16300,70:17500,75:18800,80:20000,85:21300,90:22500},30:{5:1500,10:3000,15:4500,20:6000,25:7500,30:9000,35:10500,40:12000,45:13500,50:15000,55:16500,60:18000,65:19500,70:21000,75:22500,80:24000,85:25500,90:27000},35:{5:1800,10:3500,15:5300,20:7000,25:8800,30:10500,35:12300,40:14400,45:15800,50:17500,55:19300,60:21000,65:22800,70:24500,75:26300,80:28000,85:29800,90:31500},40:{5:2000,10:4000,15:6000,20:8000,25:10000,30:12000,35:14000,40:16000,45:18000,50:20000,55:22000,60:24000,65:26000,70:28000,75:30000,80:32000,85:34000,90:36000},45:{5:2300,10:4500,15:6800,20:9000,25:11300,30:13500,35:15800,40:18000,45:20300,50:22500,55:24800,60:27000,65:29300,70:31500,75:33800,80:36000,85:38300,90:40500},50:{5:2500,10:5000,15:7500,20:10000,25:12500,30:15000,35:17500,40:20000,45:22500,50:25000,55:27500,60:30000,65:32500,70:35000,75:37500,80:40000,85:42500,90:45000},55:{5:2800,10:5500,15:8300,20:11000,25:13800,30:16500,35:19300,40:22000,45:24800,50:27500,55:30300,60:33000,65:35800,70:38500,75:41300,80:44000,85:46800,90:49500},60:{5:3000,10:6000,15:9000,20:12000,25:15000,30:18000,35:21000,40:24000,45:27000,50:30000,55:33000,60:36000,65:39000,70:42000,75:45000,80:48000,85:51000,90:54000},65:{5:3300,10:6500,15:9800,20:13000,25:16300,30:19500,35:22800,40:26000,45:29300,50:32500,55:35800,60:39000,65:42300,70:45500,75:48800,80:52000,85:55300,90:58500},70:{5:3500,10:7000,15:10500,20:14000,25:17500,30:21000,35:24500,40:28000,45:31500,50:35000,55:38500,60:42000,65:45500,70:49000,75:52500,80:56000,85:59500,90:63000}}
+const colorData = {
+    "투명": { thicknesses: [2, 3, 5, 8, 10, 15, 20], cost: 90000 },
+    "백색": { thicknesses: [2, 3, 5, 8, 10], cost: 90000 },
+    "검정": { thicknesses: [2, 3, 5, 8, 10], cost: 90000 },
+    "빨강": { thicknesses: [3, 5], cost: 90000 },
+    "청색": { thicknesses: [3, 5], cost: 90000 },
+    "회색": { thicknesses: [3, 5], cost: 90000 },
+    "주황": { thicknesses: [3, 5], cost: 90000 },
+    "노랑": { thicknesses: [3, 5], cost: 90000 },
+    "연두": { thicknesses: [3, 5], cost: 90000 },
+    "녹색": { thicknesses: [3, 5], cost: 90000 },
+    "하늘색": { thicknesses: [3, 5], cost: 90000 },
+    "갈색": { thicknesses: [3, 5], cost: 90000 },
+    "반투명백색": { thicknesses: [3, 5], cost: 90000 },
+    "반투명청색": { thicknesses: [3, 5], cost: 90000 },
+    "반투명검정": { thicknesses: [3, 5], cost: 90000 },
+    "반투명주황": { thicknesses: [3, 5], cost: 90000 },
+    "반투명연두": { thicknesses: [3, 5], cost: 90000 }
 };
+
+window.onload = function() {
+    const colorSelect = document.getElementById('acrylic-color');
+    colorSelect.innerHTML = "";
+    
+    for (let color in colorData) {
+        let opt = document.createElement('option');
+        opt.value = color;
+        opt.innerText = color;
+        colorSelect.appendChild(opt);
+    }
+    
+    updateThicknessOptions();
+    runCalculation();
+};
+
+// 색상 변경 시 두께 목록을 바꾼 뒤 즉시 계산 프로세스를 돌려 리액션을 즉각적으로 만듭니다.
+function handleColorChange() {
+    updateThicknessOptions();
+    runCalculation();
+}
+
+function updateThicknessOptions() {
+    const colorSelect = document.getElementById('acrylic-color');
+    const tSelect = document.getElementById('acrylic-t');
+    const selectedColor = colorSelect.value;
+    
+    // 현재 선택되어 있던 두께 값을 임시 저장해 둡니다.
+    const previousSelectedT = tSelect.value;
+    
+    tSelect.innerHTML = "";
+    
+    const availableThicknesses = colorData[selectedColor] ? colorData[selectedColor].thicknesses : [];
+    availableThicknesses.forEach(function(t) {
+        let opt = document.createElement('option');
+        opt.value = t;
+        opt.innerText = t + "T (" + t + "mm)";
+        tSelect.appendChild(opt);
+    });
+
+    // 새로 바뀐 색상에서도 이전 두께가 그대로 존재한다면, 선택 상태를 그대로 유지시켜 줍니다.
+    if (availableThicknesses.includes(parseInt(previousSelectedT))) {
+        tSelect.value = previousSelectedT;
+    }
+}
 
 function handleInputRestriction(input) {
     let val = parseFloat(input.value);
     if (isNaN(val)) return;
-    if (val > 90) input.value = 90;
+    
+    if (val > 900) input.value = 900;
     if (val < 0) input.value = 0;
 }
 
-function ceilToNearest5(num) {
-    if(num <= 0) return 5;
-    return Math.ceil(num / 5) * 5;
+function ceilToNearest50(num) {
+    if (num <= 0) return 50;
+    return Math.ceil(num / 50) * 50;
 }
 
-// [핵심 변경] 수량 입력 유무 검증 로직 추가
+function ceilToNearest100(num) {
+    return Math.ceil(num / 100) * 100;
+}
+
 function runCalculation() {
-    const t = document.getElementById('acrylic-t').value;
+    const colorSelect = document.getElementById('acrylic-color');
+    const tSelect = document.getElementById('acrylic-t');
+    
+    const selectedColor = colorSelect.value || "-";
+    const t = parseInt(tSelect.value); 
+    const tText = tSelect.options[tSelect.selectedIndex] ? tSelect.options[tSelect.selectedIndex].text.split(' ')[0] : "-";
+    
     const wInput = document.getElementById('size-w').value;
     const hInput = document.getElementById('size-h').value;
     const qtyInput = document.getElementById('item-qty').value;
@@ -356,17 +427,34 @@ function runCalculation() {
     let w = parseFloat(wInput);
     let h = parseFloat(hInput);
     
-    if(!wInput) { guideW.innerText = "→ 가로를 입력해주세요."; guideW.style.color = "#ef4444"; } else { guideW.innerText = "✓ 입력 완료"; guideW.style.color = "#22c55e"; }
-    if(!hInput) { guideH.innerText = "→ 세로를 입력해주세요."; guideH.style.color = "#ef4444"; } else { guideH.innerText = "✓ 입력 완료"; guideH.style.color = "#22c55e"; }
+    if(!wInput) { 
+        guideW.innerText = "→ 가로를 입력해주세요. (최소 50mm)"; 
+        guideW.style.color = "#ef4444"; 
+    } else if (w < 50) {
+        guideW.innerText = "⚠️ 최소 입력 규격은 50mm 입니다.";
+        guideW.style.color = "#f59e0b";
+    } else { 
+        guideW.innerText = "✓ 입력 완료"; 
+        guideW.style.color = "#22c55e"; 
+    }
+    
+    if(!hInput) { 
+        guideH.innerText = "→ 세로를 입력해주세요. (최소 50mm)"; 
+        guideH.style.color = "#ef4444"; 
+    } else if (h < 50) {
+        guideH.innerText = "⚠️ 최소 입력 규격은 50mm 입니다.";
+        guideH.style.color = "#f59e0b";
+    } else { 
+        guideH.innerText = "✓ 입력 완료"; 
+        guideH.style.color = "#22c55e"; 
+    }
 
-    // 가로, 세로 값 자체에 오류가 있다면 리셋 후 종료
-    if(isNaN(w) || isNaN(h) || w <= 0 || h <= 0) {
+    if(isNaN(w) || isNaN(h) || w < 50 || h < 50 || w > 900 || h > 900 || isNaN(t)) {
         resetOutputs();
         shippingStatus.style.display = "none";
         return;
     }
 
-    // [수정 완료] 수량 칸이 아예 비어있거나("") 0 이하일 경우 1장으로 강제하지 않고 리셋 처리
     if(qtyInput.trim() === "" || isNaN(parseInt(qtyInput)) || parseInt(qtyInput) <= 0) {
         resetOutputs();
         shippingStatus.style.display = "none";
@@ -375,62 +463,71 @@ function runCalculation() {
 
     let qty = parseInt(qtyInput);
 
-    // 배송 가능 판정 여부 계산
-    if ((w >= 60 && h >= 60) || w > 90 || h > 90) {
+    if ((w >= 600 && h >= 600) || w > 900 || h > 900) {
         shippingStatus.className = "shipping-status-box unplayable";
-        shippingStatus.innerHTML = "❌ 화물 배송만 가능 (가로/세로 모두 60cm 이상이거나 90cm 초과 시 택배 불가)";
+        shippingStatus.innerHTML = "❌ 화물 배송만 가능 (가로/세로 모두 600mm 이상 시 택배 불가)";
     } else {
         shippingStatus.className = "shipping-status-box playable";
         shippingStatus.innerHTML = "🚚 일반 택배 배송 가능 상품";
     }
 
-    const lookupW = ceilToNearest5(w);
-    const lookupH = ceilToNearest5(h);
+    const lookupW = ceilToNearest50(w);
+    const lookupH = ceilToNearest50(h);
 
-    let unitPrice = 0;
-    if(priceTable[t] && priceTable[t][lookupW] && priceTable[t][lookupW][lookupH]) {
-        unitPrice = priceTable[t][lookupW][lookupH];
-    } else if(priceTable[t] && priceTable[t][lookupH] && priceTable[t][lookupH][lookupW]) {
-        unitPrice = priceTable[t][lookupH][lookupW];
+    let factor = (t <= 10) ? 1800 : 2150;
+    
+    let currentCost = 90000;
+    if (colorData[selectedColor] && colorData[selectedColor].cost) {
+        currentCost = colorData[selectedColor].cost;
     }
+    
+    let rawUnitPrice = ((lookupW * lookupH * t) / currentCost) * factor;
+    let unitPrice = ceilToNearest100(rawUnitPrice); 
 
-    if(unitPrice === 0) {
+    if(unitPrice <= 0) {
         resetOutputs();
         return;
     }
 
     const totalCost = unitPrice * qty;
-    const storeQtyValue = Math.ceil(totalCost / 100);
+    const storeQtyValue = Math.ceil(totalCost / 100); 
 
-    // 유효한 계산 값 출력
     document.getElementById('unit-price-text').innerText = unitPrice.toLocaleString();
     document.getElementById('computed-total').innerText = totalCost.toLocaleString();
     document.getElementById('store-qty').innerText = storeQtyValue.toLocaleString();
     document.getElementById('guide-qty-text').innerText = storeQtyValue.toLocaleString();
 
-    document.getElementById('confirm-thickness').innerText = t;
-    document.getElementById('confirm-size').innerText = `${w} x ${h} cm`;
+    document.getElementById('confirm-color').innerText = selectedColor;
+    document.getElementById('confirm-thickness').innerText = tText;
+    document.getElementById('confirm-size').innerText = `${w} x ${h} mm`;
     document.getElementById('confirm-quantity').innerText = qty.toLocaleString();
 }
 
 function resetOutputs() {
+    const colorSelect = document.getElementById('acrylic-color');
+    const tSelect = document.getElementById('acrylic-t');
+    
+    const selectedColor = colorSelect.value || "-";
+    const tText = tSelect.options[tSelect.selectedIndex] ? tSelect.options[tSelect.selectedIndex].text.split(' ')[0] : "-";
+    
     document.getElementById('unit-price-text').innerText = "0";
     document.getElementById('computed-total').innerText = "0";
     document.getElementById('store-qty').innerText = "0";
     document.getElementById('guide-qty-text').innerText = "0";
-    document.getElementById('confirm-thickness').innerText = document.getElementById('acrylic-t').value;
-    document.getElementById('confirm-size').innerText = "0 x 0 cm";
+    document.getElementById('confirm-color').innerText = selectedColor;
+    document.getElementById('confirm-thickness').innerText = tText;
+    document.getElementById('confirm-size').innerText = "0 x 0 mm";
     document.getElementById('confirm-quantity').innerText = "0";
 }
 
 function sendEmail() {
+    const color = document.getElementById('confirm-color').innerText;
     const thickness = document.getElementById('confirm-thickness').innerText;
     const size = document.getElementById('confirm-size').innerText;
     const qty = document.getElementById('confirm-quantity').innerText;
     const name = document.getElementById('user-name').value.trim();
     const phone = document.getElementById('user-phone').value.trim();
     
-    // [추가된 변수] 화면에 계산되어 있는 총 예상 금액과 쇼핑몰 구매 수량을 가져옵니다.
     const totalPrice = document.getElementById('computed-total').innerText;
     const storeQty = document.getElementById('store-qty').innerText;
 
@@ -443,15 +540,14 @@ function sendEmail() {
         return;
     }
 
-    // EmailJS로 전송할 데이터 꾸러미 (여기에 새 변수 2개를 추가했습니다)
     const templateParams = {
         user_name: name,
         user_phone: phone,
-        acrylic_thickness: thickness,
+        acrylic_thickness: `${color} / ${thickness}`, 
         acrylic_size: size,
         order_qty: qty + " 장",
-        total_price: totalPrice + " 원",  // <-- 추가됨
-        store_qty: storeQty + " 개"        // <-- 추가됨
+        total_price: totalPrice + " 원", 
+        store_qty: storeQty + " 개"       
     };
 
     emailjs.send('service_9xdybt8', 'template_e9s62lj', templateParams)
@@ -464,6 +560,7 @@ function sendEmail() {
 }
 
 function openNaverTalk() {
+    const color = document.getElementById('confirm-color').innerText;
     const thickness = document.getElementById('confirm-thickness').innerText;
     const size = document.getElementById('confirm-size').innerText;
     const qty = document.getElementById('item-qty').value;
@@ -474,6 +571,7 @@ function openNaverTalk() {
     }
 
     let message = `[주문 확인 요청]\n`;
+    message += `- 아크릴 색상: ${color}\n`;
     message += `- 아크릴 두께: ${thickness}\n`;
     message += `- 규격(가로x세로): ${size}\n`;
     message += `- 주문 장수: ${qty}장\n`;
