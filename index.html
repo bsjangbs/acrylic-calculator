@@ -159,50 +159,31 @@
             color: #475569;
             line-height: 1.6;
         }
-        .transfer-input-group {
-            margin-bottom: 15px;
+        
+        /* [수정] 수령자/연락처 입력 그룹과 이메일 버튼을 화면에서 숨깁니다 */
+        .transfer-input-group, .btn-email {
+            display: none !important;
         }
-        .transfer-input-group div {
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-        }
-        .transfer-input-group label {
-            width: 65px;
-            font-size: 14px;
-            color: #475569;
-            font-weight: 600;
-        }
-        .transfer-input-group input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 14px;
-            outline: none;
-        }
-        .transfer-input-group input:focus {
-            border-color: #3b82f6;
-        }
+        
         .transfer-btn-group {
             display: flex;
             gap: 8px;
         }
         .btn-transfer {
             flex: 1;
-            padding: 12px;
+            padding: 14px; /* 버튼이 1개이므로 조금 더 시원하게 세로 패딩을 늘렸습니다 */
             border: none;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 15px;
             cursor: pointer;
             color: white;
             transition: opacity 0.2s;
+            text-align: center;
         }
         .btn-transfer:hover {
             opacity: 0.9;
         }
-        .btn-email { background-color: #3b82f6; }
         .btn-talk { background-color: #22c55e; }
 
         .store-guide-box {
@@ -311,7 +292,7 @@
         
         <div class="transfer-btn-group">
             <button class="btn-transfer btn-email" onclick="sendEmail()">메일로 전송하기</button>
-            <button class="btn-transfer btn-talk" onclick="openNaverTalk()">네이버 톡톡 문의</button>
+            <button class="btn-transfer btn-talk" onclick="openNaverTalk()">네이버 톡톡 문의하기</button>
         </div>
     </div>
 
@@ -361,7 +342,6 @@ window.onload = function() {
     runCalculation();
 };
 
-// 색상 변경 시 두께 목록을 바꾼 뒤 즉시 계산 프로세스를 돌려 리액션을 즉각적으로 만듭니다.
 function handleColorChange() {
     updateThicknessOptions();
     runCalculation();
@@ -372,9 +352,7 @@ function updateThicknessOptions() {
     const tSelect = document.getElementById('acrylic-t');
     const selectedColor = colorSelect.value;
     
-    // 현재 선택되어 있던 두께 값을 임시 저장해 둡니다.
     const previousSelectedT = tSelect.value;
-    
     tSelect.innerHTML = "";
     
     const availableThicknesses = colorData[selectedColor] ? colorData[selectedColor].thicknesses : [];
@@ -385,7 +363,6 @@ function updateThicknessOptions() {
         tSelect.appendChild(opt);
     });
 
-    // 새로 바뀐 색상에서도 이전 두께가 그대로 존재한다면, 선택 상태를 그대로 유지시켜 줍니다.
     if (availableThicknesses.includes(parseInt(previousSelectedT))) {
         tSelect.value = previousSelectedT;
     }
@@ -417,210 +394,3 @@ function runCalculation() {
     const tText = tSelect.options[tSelect.selectedIndex] ? tSelect.options[tSelect.selectedIndex].text.split(' ')[0] : "-";
     
     const wInput = document.getElementById('size-w').value;
-    const hInput = document.getElementById('size-h').value;
-    const qtyInput = document.getElementById('item-qty').value;
-
-    const guideW = document.getElementById('guide-w');
-    const guideH = document.getElementById('guide-h');
-    const shippingStatus = document.getElementById('shipping-status');
-
-    let w = parseFloat(wInput);
-    let h = parseFloat(hInput);
-    
-    if(!wInput) { 
-        guideW.innerText = "→ 가로를 입력해주세요. (최소 50mm)"; 
-        guideW.style.color = "#ef4444"; 
-    } else if (w < 50) {
-        guideW.innerText = "⚠️ 최소 입력 규격은 50mm 입니다.";
-        guideW.style.color = "#f59e0b";
-    } else { 
-        guideW.innerText = "✓ 입력 완료"; 
-        guideW.style.color = "#22c55e"; 
-    }
-    
-    if(!hInput) { 
-        guideH.innerText = "→ 세로를 입력해주세요. (최소 50mm)"; 
-        guideH.style.color = "#ef4444"; 
-    } else if (h < 50) {
-        guideH.innerText = "⚠️ 최소 입력 규격은 50mm 입니다.";
-        guideH.style.color = "#f59e0b";
-    } else { 
-        guideH.innerText = "✓ 입력 완료"; 
-        guideH.style.color = "#22c55e"; 
-    }
-
-    if(isNaN(w) || isNaN(h) || w < 50 || h < 50 || w > 900 || h > 900 || isNaN(t)) {
-        resetOutputs();
-        shippingStatus.style.display = "none";
-        return;
-    }
-
-    if(qtyInput.trim() === "" || isNaN(parseInt(qtyInput)) || parseInt(qtyInput) <= 0) {
-        resetOutputs();
-        shippingStatus.style.display = "none";
-        return;
-    }
-
-    let qty = parseInt(qtyInput);
-
-    if ((w >= 600 && h >= 600) || w > 900 || h > 900) {
-        shippingStatus.className = "shipping-status-box unplayable";
-        shippingStatus.innerHTML = "❌ 화물 배송만 가능 (가로/세로 모두 600mm 이상 시 택배 불가)";
-    } else {
-        shippingStatus.className = "shipping-status-box playable";
-        shippingStatus.innerHTML = "🚚 일반 택배 배송 가능 상품";
-    }
-
-    const lookupW = ceilToNearest50(w);
-    const lookupH = ceilToNearest50(h);
-
-    let factor = (t <= 10) ? 1800 : 2150;
-    
-    let currentCost = 90000;
-    if (colorData[selectedColor] && colorData[selectedColor].cost) {
-        currentCost = colorData[selectedColor].cost;
-    }
-    
-    let rawUnitPrice = ((lookupW * lookupH * t) / currentCost) * factor;
-    let unitPrice = ceilToNearest100(rawUnitPrice); 
-
-    if(unitPrice <= 0) {
-        resetOutputs();
-        return;
-    }
-
-    const totalCost = unitPrice * qty;
-    const storeQtyValue = Math.ceil(totalCost / 100); 
-
-    document.getElementById('unit-price-text').innerText = unitPrice.toLocaleString();
-    document.getElementById('computed-total').innerText = totalCost.toLocaleString();
-    document.getElementById('store-qty').innerText = storeQtyValue.toLocaleString();
-    document.getElementById('guide-qty-text').innerText = storeQtyValue.toLocaleString();
-
-    document.getElementById('confirm-color').innerText = selectedColor;
-    document.getElementById('confirm-thickness').innerText = tText;
-    document.getElementById('confirm-size').innerText = `${w} x ${h} mm`;
-    document.getElementById('confirm-quantity').innerText = qty.toLocaleString();
-}
-
-function resetOutputs() {
-    const colorSelect = document.getElementById('acrylic-color');
-    const tSelect = document.getElementById('acrylic-t');
-    
-    const selectedColor = colorSelect.value || "-";
-    const tText = tSelect.options[tSelect.selectedIndex] ? tSelect.options[tSelect.selectedIndex].text.split(' ')[0] : "-";
-    
-    document.getElementById('unit-price-text').innerText = "0";
-    document.getElementById('computed-total').innerText = "0";
-    document.getElementById('store-qty').innerText = "0";
-    document.getElementById('guide-qty-text').innerText = "0";
-    document.getElementById('confirm-color').innerText = selectedColor;
-    document.getElementById('confirm-thickness').innerText = tText;
-    document.getElementById('confirm-size').innerText = "0 x 0 mm";
-    document.getElementById('confirm-quantity').innerText = "0";
-}
-
-function sendEmail() {
-    const color = document.getElementById('confirm-color').innerText;
-    const thickness = document.getElementById('confirm-thickness').innerText;
-    const size = document.getElementById('confirm-size').innerText;
-    const qty = document.getElementById('confirm-quantity').innerText;
-    const name = document.getElementById('user-name').value.trim();
-    const phone = document.getElementById('user-phone').value.trim();
-    
-    const totalPrice = document.getElementById('computed-total').innerText;
-    const storeQty = document.getElementById('store-qty').innerText;
-
-    if(!name || !phone) {
-        alert("수령자와 연락처를 입력하셔야 이메일 전송이 가능합니다.");
-        return;
-    }
-    if(qty === "0") {
-        alert("수량을 올바르게 입력하신 후 전송해주세요.");
-        return;
-    }
-
-    const templateParams = {
-        user_name: name,
-        user_phone: phone,
-        acrylic_thickness: `${color} / ${thickness}`, 
-        acrylic_size: size,
-        order_qty: qty + " 장",
-        total_price: totalPrice + " 원", 
-        store_qty: storeQty + " 개"       
-    };
-
-    emailjs.send('service_9xdybt8', 'template_e9s62lj', templateParams)
-        .then(function(response) {
-            alert('성공적으로 메일이 전송되었습니다!');
-        }, function(error) {
-            alert('메일 전송에 실패했습니다. 다시 시도해주세요.');
-            console.error('EmailJS Error:', error);
-        });
-}
-
-function openNaverTalk() {
-    const color = document.getElementById('confirm-color').innerText;
-    const thickness = document.getElementById('confirm-thickness').innerText;
-    const size = document.getElementById('confirm-size').innerText;
-    const qty = document.getElementById('item-qty').value;
-
-    if(!qty || parseInt(qty) <= 0) {
-        alert("주문 수량(판수)을 먼저 입력해야 문의 데이터를 전송할 수 있습니다.");
-        return;
-    }
-
-    let message = `[주문 확인 요청]\n`;
-    message += `- 아크릴 색상: ${color}\n`;
-    message += `- 아크릴 두께: ${thickness}\n`;
-    message += `- 규격(가로x세로): ${size}\n`;
-    message += `- 주문 장수: ${qty}장\n`;
-    
-    const name = document.getElementById('user-name').value.trim();
-    const phone = document.getElementById('user-phone').value.trim();
-    if(name) message += `- 수령자: ${name}\n`;
-    if(phone) message += `- 연락처: ${phone}`;
-
-    const tempTextArea = document.createElement("textarea");
-    tempTextArea.value = message;
-    tempTextArea.style.position = "fixed";  
-    tempTextArea.style.top = "0";
-    tempTextArea.style.left = "0";
-    tempTextArea.style.opacity = "0";
-    document.body.appendChild(tempTextArea);
-    
-    tempTextArea.focus();
-    tempTextArea.select();
-    tempTextArea.setSelectionRange(0, 99999); 
-
-    try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-            alert("주문 내역이 자동으로 복사되었습니다!\n열리는 네이버 톡톡 창에 [붙여넣기(Ctrl+V)]를 해 주세요.");
-        }
-    } catch (err) {
-        console.error("클립보드 차단 발생:", err);
-    }
-    
-    document.body.removeChild(tempTextArea);
-    window.open('http://talk.naver.com/W4JO8T', '_blank');
-}
-
-function formatPhoneNumber(input) {
-    let cleanNum = input.value.replace(/[^0-9]/g, '');
-    let result = "";
-
-    if (cleanNum.length < 4) {
-        result = cleanNum;
-    } else if (cleanNum.length < 7) {
-        result = cleanNum.substr(0, 3) + "-" + cleanNum.substr(3);
-    } else if (cleanNum.length < 11) {
-        result = cleanNum.substr(0, 3) + "-" + cleanNum.substr(3, 3) + "-" + cleanNum.substr(6);
-    } else {
-        result = cleanNum.substr(0, 3) + "-" + cleanNum.substr(3, 4) + "-" + cleanNum.substr(7, 4);
-    }
-    input.value = result;
-}
-</script>
-</body>
-</html>
